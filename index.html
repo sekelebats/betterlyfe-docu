@@ -1,724 +1,574 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Notes</title>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Dokumentasi · 5 Postingan</title>
+    <!-- Highlight.js CSS (tema github-dark untuk dark mode) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
     <style>
+        /* RESET & VARIABEL — base 14px, scroll di body */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        :root {
-            --bg: #fafafa;
-            --bg-card: #ffffff;
-            --text: #1a1a1a;
-            --text-secondary: #666666;
-            --border: #e0e0e0;
-            --accent: #667eea;
-            --accent-hover: #5568d3;
-            --shadow: rgba(0,0,0,0.08);
-            --delete: #ef4444;
-            --warning: #f59e0b;
-            --success: #10b981;
+        html, body {
+            height: 100%;
         }
 
-        [data-theme="dark"] {
-            --bg: #0f0f0f;
-            --bg-card: #1a1a1a;
-            --text: #ffffff;
-            --text-secondary: #a0a0a0;
-            --border: #2a2a2a;
-            --shadow: rgba(0,0,0,0.3);
+        html {
+            font-size: 14px;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            transition: all 0.3s;
-        }
-
-        .app {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .search-box {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .search-box input {
-            padding: 0.7rem 1rem 0.7rem 2.8rem;
-            border: 2px solid var(--border);
-            border-radius: 50px;
-            background: var(--bg-card);
-            color: var(--text);
-            font-size: 0.95rem;
-            width: 250px;
-            transition: all 0.3s;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 1rem;
-            color: var(--text-secondary);
-        }
-
-        .btn {
-            padding: 0.7rem 1.5rem;
-            border: none;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s;
-            font-size: 0.95rem;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--accent-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-icon {
-            background: var(--bg-card);
-            color: var(--text);
-            border: 2px solid var(--border);
-            padding: 0.7rem;
-            border-radius: 50%;
-        }
-
-        .btn-icon:hover {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-        }
-
-        .filters {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            padding: 0.6rem 1.2rem;
-            border: 2px solid var(--border);
-            background: var(--bg-card);
-            color: var(--text-secondary);
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .filter-btn:hover,
-        .filter-btn.active {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-        }
-
-        .notes-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .note-card {
-            background: var(--bg-card);
-            border: 2px solid var(--border);
-            border-radius: 16px;
-            padding: 1.5rem;
-            transition: all 0.3s;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .note-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 24px var(--shadow);
-            border-color: var(--accent);
-        }
-
-        .note-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 1rem;
-        }
-
-        .note-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 0.5rem;
-        }
-
-        .note-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .note-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 0.4rem;
-            border-radius: 8px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-        }
-
-        .note-btn:hover {
-            background: var(--bg);
-            color: var(--text);
-        }
-
-        .note-btn.delete:hover {
-            background: var(--delete);
-            color: white;
-        }
-
-        .note-content {
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 1rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 4;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .note-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .note-category {
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        .category-personal {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--delete);
-        }
-
-        .category-work {
-            background: rgba(102, 126, 234, 0.1);
-            color: var(--accent);
-        }
-
-        .category-ideas {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--warning);
-        }
-
-        .note-date {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 2rem;
-            max-width: 600px;
-            width: 100%;
-            max-height: 90vh;
+            background-color: #000000;
+            color: #e4e6eb;
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Inter', 'Helvetica Neue', sans-serif;
+            font-weight: 400;
+            line-height: 1.5;
             overflow-y: auto;
-            animation: slideUp 0.3s ease-out;
+            -webkit-overflow-scrolling: touch;
+            display: flex;
+            flex-direction: column;
         }
 
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* Layout utama: agar footer bisa menempel di bottom */
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
+            flex: 1;
         }
 
-        .modal-header {
+        /* ========= SIDEBAR KIRI ========= */
+        .sidebar {
+            background-color: #0a0a0a;
+            width: 260px;
+            flex-shrink: 0;
+            border-right: 1px solid #1c1c1e;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease;
+            z-index: 20;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 1rem;
+            border-bottom: 1px solid #1c1c1e;
+            margin-bottom: 1rem;
+        }
+        .sidebar-header h3 {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #ffffff;
+        }
+        .sidebar-header p {
+            font-size: 0.7rem;
+            color: #8e8e93;
+            margin-top: 0.25rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0 0.8rem;
+        }
+        .nav-item {
+            margin-bottom: 0.2rem;
+        }
+
+        .menu-parent {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #e4e6eb;
+            transition: background 0.15s;
+        }
+        .menu-parent:hover {
+            background-color: #1c1c1e;
+        }
+        .arrow {
+            font-size: 0.7rem;
+            transition: transform 0.2s;
+            color: #8e8e93;
+        }
+        .arrow.rotate {
+            transform: rotate(90deg);
+        }
+
+        .sub-list {
+            list-style: none;
+            padding-left: 1.5rem;
+            margin: 0.2rem 0 0.5rem 0;
+            display: none;
+        }
+        .sub-list.open {
+            display: block;
+        }
+        .sub-list li {
+            padding: 0.4rem 0.8rem;
+            margin: 0.1rem 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: #b0b3b8;
+            transition: background 0.1s;
+        }
+        .sub-list li:hover {
+            background-color: #1c1c1e;
+            color: #ffffff;
+        }
+        .sub-list li.active {
+            background-color: #2c2c2e;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .direct-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #e4e6eb;
+            transition: background 0.15s;
+        }
+        .direct-link:hover {
+            background-color: #1c1c1e;
+        }
+
+        /* ========= MAIN AREA (section baca) ========= */
+        .main-area {
+            flex: 1;
+            background-color: #000000;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        /* Navbar di section baca */
+        .navbar-read {
+            background-color: #0a0a0a;
+            border-bottom: 1px solid #1c1c1e;
+            padding: 0.75rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
-
-        .modal-header h2 {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-
-        .close-btn {
+        .menu-toggle-btn {
             background: none;
             border: none;
-            color: var(--text-secondary);
+            color: #e4e6eb;
+            font-size: 0.9rem;
+            font-weight: 500;
             cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: all 0.3s;
+            padding: 0.25rem 0.5rem;
+        }
+        .menu-toggle-btn:hover {
+            color: #ffffff;
+        }
+        .navbar-right {
+            color: #e4e6eb;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: opacity 0.1s;
+        }
+        .navbar-right:hover {
+            opacity: 0.8;
         }
 
-        .close-btn:hover {
-            background: var(--bg);
-            color: var(--text);
+        /* Container postingan: akan mengambil sisa ruang agar footer di bottom */
+        .post-container {
+            flex: 1;
+            padding: 2rem 1.5rem;
         }
-
-        .form-group {
-            margin-bottom: 1.5rem;
+        .post-item {
+            max-width: 780px;
+            margin: 0 auto;
+            display: none;
         }
-
-        .form-group label {
+        .post-item.active-post {
             display: block;
-            margin-bottom: 0.5rem;
+        }
+        .post-title {
+            font-size: 1.8rem;
             font-weight: 600;
-            color: var(--text);
+            margin-bottom: 0.5rem;
+            color: #ffffff;
         }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            background: var(--bg);
-            color: var(--text);
-            font-family: inherit;
-            font-size: 1rem;
-            transition: all 0.3s;
+        .post-meta {
+            font-size: 0.75rem;
+            color: #8e8e93;
+            margin-bottom: 1.8rem;
+            border-left: 2px solid #3a3a3c;
+            padding-left: 0.8rem;
         }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 150px;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 4rem 2rem;
-            color: var(--text-secondary);
-        }
-
-        .empty-state i {
+        .post-content p {
             margin-bottom: 1rem;
-            opacity: 0.5;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #e4e6eb;
+        }
+        .post-content h2 {
+            margin: 1.5rem 0 0.6rem;
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: #ffffff;
+        }
+        /* Gaya dasar untuk elemen kode (fallback) */
+        .post-content code {
+            background-color: #1c1c1e;
+            padding: 0.2rem 0.4rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+        }
+        /* Link biru di dalam konten */
+        .post-content a {
+            color: #81D9FE;
+            text-decoration: none;
+            border-bottom: 1px dotted #81D9FE;
+        }
+        .post-content a:hover {
+            color: #a8e5ff;
+            border-bottom: 1px solid #81D9FE;
+        }
+        /* Marker / highlight */
+        .post-content mark {
+            background-color: #f1fa8c;
+            color: #0a0a0a;
+            padding: 0 0.2rem;
+            border-radius: 4px;
         }
 
-        @media (max-width: 768px) {
-            .app {
-                padding: 1rem;
-            }
+        /* ========= FOOTER ========= */
+        .footer {
+            background-color: #0a0a0a;
+            border-top: 1px solid #1c1c1e;
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #e4e6eb;
+            flex-shrink: 0;
+        }
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .green-bullet {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: #39ff14;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #39ff14;
+            animation: pulse-green 1.2s infinite ease-in-out;
+        }
+        @keyframes pulse-green {
+            0% { opacity: 0.4; transform: scale(0.8); box-shadow: 0 0 0 0 #39ff14; }
+            50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 8px 2px #39ff14; }
+            100% { opacity: 0.4; transform: scale(0.8); box-shadow: 0 0 0 0 #39ff14; }
+        }
+        .sistem-work {
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+        .footer-right {
+            color: #8e8e93;
+            font-size: 0.75rem;
+        }
 
-            header {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: stretch;
-            }
+        /* Scrollbar minimal */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3a3a3c;
+            border-radius: 8px;
+        }
 
-            .header-actions {
-                flex-direction: column;
+        /* Responsive sidebar */
+        @media (max-width: 700px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                transform: translateX(-100%);
+                box-shadow: none;
+                transition: transform 0.2s ease;
+                z-index: 30;
+                background-color: #0a0a0a;
             }
-
-            .search-box input {
-                width: 100%;
+            .sidebar.open {
+                transform: translateX(0);
+                box-shadow: 2px 0 12px rgba(0,0,0,0.5);
             }
-
-            .notes-grid {
-                grid-template-columns: 1fr;
+            .menu-toggle-btn {
+                display: inline-block;
+            }
+        }
+        @media (min-width: 701px) {
+            .sidebar {
+                position: relative;
+                transform: none !important;
+            }
+            .menu-toggle-btn {
+                cursor: default;
+                opacity: 0.7;
+            }
+            .menu-toggle-btn:hover {
+                color: #e4e6eb;
             }
         }
     </style>
 </head>
 <body>
-    <div class="app">
-        <header>
-            <div class="header-left">
-                <h1>
-                    <i data-lucide="notebook-pen"></i>
-                    My Notes
-                </h1>
-            </div>
-            <div class="header-actions">
-                <div class="search-box">
-                    <i class="search-icon" data-lucide="search" size="18"></i>
-                    <input type="text" placeholder="Search notes..." id="searchInput">
+<div class="app-layout">
+    <!-- SIDEBAR KIRI -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>dokumentasi.bangsa</h3>
+            <p>gelap · fokus · tanpa ikon</p>
+        </div>
+        <ul class="nav-menu" id="navMenu">
+            <li class="nav-item">
+                <div class="menu-parent" data-idx="0">
+                    <div class="title">Panduan Dasar</div>
+                    <span class="arrow">&#8250;</span>
                 </div>
-                <button class="btn btn-primary" onclick="openModal()">
-                    <i data-lucide="plus" size="18"></i>
-                    New Note
-                </button>
-                <button class="btn-icon" onclick="toggleTheme()">
-                    <i data-lucide="moon" size="20"></i>
-                </button>
-            </div>
-        </header>
-
-        <div class="filters">
-            <button class="filter-btn active" data-filter="all">
-                <i data-lucide="layout-grid" size="16"></i>
-                All Notes
-            </button>
-            <button class="filter-btn" data-filter="personal">
-                <i data-lucide="user" size="16"></i>
-                Personal
-            </button>
-            <button class="filter-btn" data-filter="work">
-                <i data-lucide="briefcase" size="16"></i>
-                Work
-            </button>
-            <button class="filter-btn" data-filter="ideas">
-                <i data-lucide="lightbulb" size="16"></i>
-                Ideas
-            </button>
-        </div>
-
-        <div class="notes-grid" id="notesGrid">
-            <!-- Notes will be inserted here -->
-        </div>
+                <ul class="sub-list" data-parent="0">
+                    <li data-post="post1">Mulai Cepat — 5 menit</li>
+                    <li data-post="post2">Cara Cari di Kagi</li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <div class="menu-parent" data-idx="1">
+                    <div class="title">Fitur Unggulan</div>
+                    <span class="arrow">&#8250;</span>
+                </div>
+                <ul class="sub-list" data-parent="1">
+                    <li data-post="post3">Lensa dan Shortcut</li>
+                    <li data-post="post4">Assistant AI</li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <div class="direct-link" data-post="post5">
+                    <div class="title">Privasi dan API</div>
+                </div>
+            </li>
+        </ul>
     </div>
 
-    <!-- Modal -->
-    <div class="modal" id="noteModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>
-                    <i data-lucide="edit-3"></i>
-                    <span id="modalTitle">Create Note</span>
-                </h2>
-                <button class="close-btn" onclick="closeModal()">
-                    <i data-lucide="x" size="24"></i>
-                </button>
+    <!-- MAIN AREA (section baca) -->
+    <div class="main-area" id="mainArea">
+        <div class="navbar-read">
+            <button class="menu-toggle-btn" id="navbarMenuBtn">Menu</button>
+            <a href="https://betterlyfe.netlify.app" target="_blank" rel="noopener noreferrer" class="navbar-right">betterlyfe</a>
+        </div>
+
+        <div class="post-container" id="postContainer">
+            <!-- Postingan 1 (contoh dengan kode, link, mark) -->
+            <div id="post1" class="post-item">
+                <div class="post-title">Mulai Cepat — 5 menit</div>
+                <div class="post-meta">17 Mei 2026 · 3 menit baca</div>
+                <div class="post-content">
+                    <p><strong>Kagi</strong> menghadirkan pencarian tanpa iklan dan sangat privat. Untuk memulai, atur sebagai mesin pencari default di browser.</p>
+                    <h2>Langkah awal</h2>
+                    <p>1. Pasang ekstensi Kagi di <a href="#">Chrome/Firefox</a>.<br>
+                    2. Sesuaikan preferensi (naikkan atau turunkan domain).<br>
+                    3. Coba fitur <code>!bang</code> seperti <code>!yt</code> atau <code>!github</code>.</p>
+                    <p>Contoh kode <mark>highlighter</mark> dengan JavaScript:</p>
+                    <pre><code class="language-javascript">// Ini adalah komentar
+function greet(name) {
+    console.log("Hello, " + name + "!");
+}
+greet("Kagi User");</code></pre>
+                    <p>Dokumentasi ini mendukung <strong>link biru</strong> dan <mark>marker kuning</mark>.</p>
+                    <p style="margin-top: 1rem;">--- Perpanjangan konten agar scroll panjang ---</p>
+                    <p>Lorem ipsum odor amet, consectetuer adipiscing elit. Himenaeos faucibus torquent dui metus id orci congue.</p>
+                </div>
             </div>
-
-            <form id="noteForm">
-                <div class="form-group">
-                    <label>Title</label>
-                    <input type="text" id="noteTitle" placeholder="Enter note title..." required>
+            <!-- Postingan 2 -->
+            <div id="post2" class="post-item">
+                <div class="post-title">Cara Cari di Kagi</div>
+                <div class="post-meta">17 Mei 2026 · 4 menit baca</div>
+                <div class="post-content">
+                    <p>Personalisasi hasil pencarian: naikkan situs favorit atau blokir domain langsung dari hasil pencarian.</p>
+                    <h2>Tips pencarian</h2>
+                    <p>Gunakan tanda tanya <strong>? di akhir kata kunci</strong> untuk memicu AI Quick Answer. Contoh: <code>resep nasi goreng?</code> akan memberi ringkasan.</p>
+                    <p>Lensa juga bisa memfilter topik dari forum atau situs akademik.</p>
+                    <pre><code class="language-python"># Python example
+def search(query):
+    return f"Hasil untuk {query}"
+print(search("kagi"))</code></pre>
                 </div>
-
-                <div class="form-group">
-                    <label>Content</label>
-                    <textarea id="noteContent" placeholder="Write your note here..." required></textarea>
+            </div>
+            <!-- Postingan 3 -->
+            <div id="post3" class="post-item">
+                <div class="post-title">Lensa dan Shortcut (Bang)</div>
+                <div class="post-meta">17 Mei 2026 · 5 menit baca</div>
+                <div class="post-content">
+                    <p><strong>Lensa</strong> adalah filter pintar yang menyaring website tertentu. Contoh: Lensa "Programming" hanya menampilkan hasil coding.</p>
+                    <p><strong>!bang</strong> shortcut ajaib: <code>!yt lofi hip hop</code> (YouTube), <code>!mdn flexbox</code> (MDN), <code>!gh kagi-docs</code> (GitHub).</p>
                 </div>
-
-                <div class="form-group">
-                    <label>Category</label>
-                    <select id="noteCategory">
-                        <option value="personal">Personal</option>
-                        <option value="work">Work</option>
-                        <option value="ideas">Ideas</option>
-                    </select>
+            </div>
+            <!-- Postingan 4 -->
+            <div id="post4" class="post-item">
+                <div class="post-title">Assistant AI — Tanpa Sampah</div>
+                <div class="post-meta">17 Mei 2026 · 4 menit baca</div>
+                <div class="post-content">
+                    <p>Kagi Assistant menggabungkan GPT-4, Claude, Llama tanpa melacak privasi. Bisa merangkum halaman atau menjawab pertanyaan.</p>
+                    <h2>Fitur andalan</h2>
+                    <p>Tekan <strong>Summarize Page</strong> untuk meringkas artikel. Gunakan "Ask a question" terhadap URL tertentu. Semua tanpa iklan.</p>
                 </div>
+            </div>
+            <!-- Postingan 5 -->
+            <div id="post5" class="post-item">
+                <div class="post-title">Privasi Bawaan dan API Kuat</div>
+                <div class="post-meta">17 Mei 2026 · 6 menit baca</div>
+                <div class="post-content">
+                    <p>Kagi tidak menyimpan riwayat pencarian, tanpa pelacak, 100% bebas iklan. Untuk developer tersedia API Kagi Search.</p>
+                    <h2>Dokumentasi teknis</h2>
+                    <p>Integrasikan Kagi ke aplikasi, bot, atau workflow. API mencakup pencarian real-time, summarizer, lensa kustom. Lihat <strong>help.kagi.com/api</strong>.</p>
+                    <pre><code class="language-bash">curl -X GET "https://api.kagi.com/search?q=example"</code></pre>
+                </div>
+            </div>
+        </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    <i data-lucide="save" size="18"></i>
-                    Save Note
-                </button>
-            </form>
+        <!-- FOOTER -->
+        <div class="footer">
+            <div class="footer-left">
+                <span class="green-bullet"></span>
+                <span class="sistem-work">all sistem work</span>
+            </div>
+            <div class="footer-right">
+                © OBSRV/club | 2026
+            </div>
         </div>
     </div>
+</div>
 
-    <script>
-        lucide.createIcons();
+<!-- Highlight.js library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+    // ========== LOGICA SIDEBAR & NAVIGASI ==========
+    const sidebar = document.getElementById('sidebar');
+    const navbarMenuBtn = document.getElementById('navbarMenuBtn');
+    const mainArea = document.getElementById('mainArea');
 
-        let notes = [
-            {
-                id: 1,
-                title: "Project Ideas",
-                content: "Build a minimal blog with clean design. Focus on typography and whitespace. Use Lucide icons for visual elements.",
-                category: "ideas",
-                date: "2025-10-10"
-            },
-            {
-                id: 2,
-                title: "Meeting Notes",
-                content: "Discussed new design system implementation. Need to finalize color palette and component library by next week.",
-                category: "work",
-                date: "2025-10-09"
-            },
-            {
-                id: 3,
-                title: "Book to Read",
-                content: "Atomic Habits by James Clear. Focus on building better habits and breaking bad ones through small changes.",
-                category: "personal",
-                date: "2025-10-08"
-            }
-        ];
+    function isMobile() {
+        return window.innerWidth <= 700;
+    }
 
-        let editingId = null;
-
-        function renderNotes(filter = 'all', search = '') {
-            const grid = document.getElementById('notesGrid');
-            let filteredNotes = notes;
-
-            if (filter !== 'all') {
-                filteredNotes = notes.filter(n => n.category === filter);
-            }
-
-            if (search) {
-                filteredNotes = filteredNotes.filter(n => 
-                    n.title.toLowerCase().includes(search.toLowerCase()) ||
-                    n.content.toLowerCase().includes(search.toLowerCase())
-                );
-            }
-
-            if (filteredNotes.length === 0) {
-                grid.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1/-1;">
-                        <i data-lucide="inbox" size="64"></i>
-                        <h3>No notes found</h3>
-                        <p>Create your first note to get started</p>
-                    </div>
-                `;
-                lucide.createIcons();
-                return;
-            }
-
-            grid.innerHTML = filteredNotes.map(note => `
-                <div class="note-card" onclick="viewNote(${note.id})">
-                    <div class="note-header">
-                        <div style="flex: 1;">
-                            <div class="note-title">${note.title}</div>
-                        </div>
-                        <div class="note-actions">
-                            <button class="note-btn" onclick="event.stopPropagation(); editNote(${note.id})">
-                                <i data-lucide="edit-2" size="16"></i>
-                            </button>
-                            <button class="note-btn delete" onclick="event.stopPropagation(); deleteNote(${note.id})">
-                                <i data-lucide="trash-2" size="16"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="note-content">${note.content}</div>
-                    <div class="note-footer">
-                        <span class="note-category category-${note.category}">
-                            <i data-lucide="${getCategoryIcon(note.category)}" size="12"></i>
-                            ${note.category}
-                        </span>
-                        <span class="note-date">
-                            <i data-lucide="calendar" size="12"></i>
-                            ${formatDate(note.date)}
-                        </span>
-                    </div>
-                </div>
-            `).join('');
-
-            lucide.createIcons();
+    function toggleSidebar() {
+        if (isMobile()) {
+            sidebar.classList.toggle('open');
         }
+    }
 
-        function getCategoryIcon(category) {
-            const icons = {
-                personal: 'user',
-                work: 'briefcase',
-                ideas: 'lightbulb'
-            };
-            return icons[category] || 'tag';
+    navbarMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (isMobile()) toggleSidebar();
+    });
+
+    document.body.addEventListener('click', (e) => {
+        if (isMobile() && sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== navbarMenuBtn) {
+            sidebar.classList.remove('open');
         }
+    });
 
-        function formatDate(dateStr) {
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        }
-
-        function openModal(isEdit = false) {
-            document.getElementById('noteModal').classList.add('active');
-            document.getElementById('modalTitle').textContent = isEdit ? 'Edit Note' : 'Create Note';
-            lucide.createIcons();
-        }
-
-        function closeModal() {
-            document.getElementById('noteModal').classList.remove('active');
-            document.getElementById('noteForm').reset();
-            editingId = null;
-        }
-
-        function editNote(id) {
-            const note = notes.find(n => n.id === id);
-            if (note) {
-                editingId = id;
-                document.getElementById('noteTitle').value = note.title;
-                document.getElementById('noteContent').value = note.content;
-                document.getElementById('noteCategory').value = note.category;
-                openModal(true);
-            }
-        }
-
-        function deleteNote(id) {
-            if (confirm('Are you sure you want to delete this note?')) {
-                notes = notes.filter(n => n.id !== id);
-                renderNotes();
-            }
-        }
-
-        function viewNote(id) {
-            const note = notes.find(n => n.id === id);
-            if (note) {
-                alert(`${note.title}\n\n${note.content}`);
-            }
-        }
-
-        document.getElementById('noteForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const title = document.getElementById('noteTitle').value;
-            const content = document.getElementById('noteContent').value;
-            const category = document.getElementById('noteCategory').value;
-
-            if (editingId) {
-                const note = notes.find(n => n.id === editingId);
-                if (note) {
-                    note.title = title;
-                    note.content = content;
-                    note.category = category;
-                }
-            } else {notes.unshift({
-                    id: Date.now(),
-                    title,
-                    content,
-                    category,
-                    date: new Date().toISOString().split('T')[0]
-                });
-            }
-
-            closeModal();
-            renderNotes();
+    function showPost(postId) {
+        // Sembunyikan semua post-item
+        document.querySelectorAll('.post-item').forEach(post => {
+            post.classList.remove('active-post');
         });
+        const targetPost = document.getElementById(postId);
+        if (targetPost) targetPost.classList.add('active-post');
 
-        // Filter buttons
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                renderNotes(btn.dataset.filter);
+        // Jalankan highlight pada blok kode di dalam postingan yang baru tampil
+        if (typeof hljs !== 'undefined') {
+            document.querySelectorAll('.post-item.active-post pre code').forEach((block) => {
+                hljs.highlightElement(block);
             });
-        });
-
-        // Search
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
-            renderNotes(activeFilter, e.target.value);
-        });
-
-        // Theme toggle
-        function toggleTheme() {
-            const html = document.documentElement;
-            const current = html.getAttribute('data-theme');
-            const newTheme = current === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
         }
 
-        // Load theme
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', savedTheme);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-        // Close modal on outside click
-        document.getElementById('noteModal').addEventListener('click', (e) => {
-            if (e.target.id === 'noteModal') {
-                closeModal();
+    function setActiveSubItem(activeLi) {
+        document.querySelectorAll('.sub-list li').forEach(li => li.classList.remove('active'));
+        if (activeLi) activeLi.classList.add('active');
+    }
+
+    // Expand/collapse sublist
+    const parents = document.querySelectorAll('.menu-parent');
+    parents.forEach(parent => {
+        parent.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const idx = parent.getAttribute('data-idx');
+            const sublist = document.querySelector(`.sub-list[data-parent="${idx}"]`);
+            const arrowSpan = parent.querySelector('.arrow');
+            if (sublist) {
+                sublist.classList.toggle('open');
+                if (arrowSpan) arrowSpan.classList.toggle('rotate');
             }
         });
+    });
 
-        // Initial render
-        renderNotes();
-    </script>
-</body>
-</html>
+    // Klik sublist
+    const subItems = document.querySelectorAll('.sub-list li');
+    subItems.forEach(li => {
+        li.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const postId = li.getAttribute('data-post');
+            if (postId) {
+                showPost(postId);
+                setActiveSubItem(li);
+            }
+            if (isMobile()) sidebar.classList.remove('open');
+        });
+    });
+
+    // Klik direct-link
+    const directLinks = document.querySelectorAll('.direct-link');
+    directLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const postId = link.getAttribute('data-post');
+            if (postId) {
+                showPost(postId);
+                setActiveSubItem(null);
+            }
+            if (isMobile()) sidebar.classList.remove('open');
+        });
+    });
+
+    // Default: tampilkan post1, buka sublist pertama
+    showPost('post1');
+    const firstParent = document.querySelector('.menu-parent[data-idx="0"]');
+    if (firstParent) {
+        const subFirst = document.querySelector('.sub-list[data-parent="0"]');
+        const arrowFirst = firstParent.querySelector('.arrow');
+        if (subFirst) {
+            subFirst.classList.add('open');
+            if (arrowFirst) arrowFirst.classList.add('rotate');
+        }
+    }
+    const firstSub = document.querySelector('.su
