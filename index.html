@@ -452,7 +452,7 @@ print(search("kagi"))</code></pre>
             </div>
         </div>
 
-        <!-- FOOTER -->
+                <!-- FOOTER -->
         <div class="footer">
             <div class="footer-left">
                 <span class="green-bullet"></span>
@@ -571,4 +571,18 @@ print(search("kagi"))</code></pre>
             if (arrowFirst) arrowFirst.classList.add('rotate');
         }
     }
-    const firstSub = document.querySelector('.su
+    const firstSub = document.querySelector('.sub-list li');
+    if (firstSub) firstSub.classList.add('active');
+
+    if (!isMobile()) {
+        sidebar.classList.add('open');
+    }
+    window.addEventListener('resize', () => {
+        if (!isMobile()) {
+            sidebar.classList.remove('open');
+            sidebar.style.transform = '';
+        }
+    });
+</script>
+</body>
+</html>
